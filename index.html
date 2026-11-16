@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Гра: Будова і функції клітини</title>
 <style>
 :root{
@@ -27,43 +27,63 @@
   --t-micro:60ms; --t-fast:120ms; --t-normal:200ms; --t-slow:300ms;
   --ease-out:cubic-bezier(.22,1,.36,1); --ease-in:cubic-bezier(.55,0,.55,.2); --ease-standard:cubic-bezier(.4,0,.2,1);
 }
-body{background:#fafafa;padding:16px;font-family:var(--kimi-font-sans);color:var(--kimi-color-text-primary);margin:0}
+body{background:linear-gradient(160deg,#fde68a 0%,#fbcfe8 35%,#bae6fd 70%,#bbf7d0 100%) fixed;min-height:100vh;padding:12px;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));font-family:var(--kimi-font-sans);color:var(--kimi-color-text-primary);margin:0;-webkit-tap-highlight-color:transparent}
 button,input,select,textarea{font:inherit}
 </style>
 </head>
 <body>
 <div id="cellgame" style="font-family: var(--kimi-font-sans); color: var(--kimi-color-text-primary); max-width:1000px;margin:0 auto;">
   <style>
-    #cellgame .hdr{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
-    #cellgame h3{margin:0;font-size:17px;font-weight:500;line-height:1.3}
-    #cellgame .sub{font-size:13px;color:var(--kimi-color-text-tertiary);margin:2px 0 0}
-    #cellgame .score{margin-left:auto;font-size:14px;font-weight:500;font-variant-numeric:tabular-nums}
-    #cellgame .pbar{width:120px;height:6px;border-radius:4px;background:var(--kimi-color-surface-muted);overflow:hidden}
-    #cellgame .pfill{height:100%;width:0%;background:var(--kimi-color-text-primary);transition:width var(--t-normal) var(--ease-out)}
-    #cellgame .btn{border:1px solid var(--kimi-color-border);background:var(--kimi-color-surface);color:var(--kimi-color-text-primary);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;transition:background var(--t-fast)}
-    #cellgame .btn:hover{background:var(--kimi-color-surface-muted)}
-    #cellgame .board{display:grid;grid-template-columns:150px repeat(1,minmax(0,1fr));gap:8px;align-items:start}
-    #cellgame .parts{display:flex;flex-direction:column;gap:6px}
-    #cellgame .sec-h{font-size:12px;font-weight:500;color:var(--kimi-color-text-secondary);padding:8px 8px 4px;border-bottom:1px solid var(--kimi-color-border);margin-bottom:8px;position:sticky;top:0;background:transparent}
-    #cellgame .col{display:flex;flex-direction:column;gap:6px}
-    #cellgame .chip{padding:7px 10px;border:1px solid var(--kimi-color-border);border-radius:10px;background:var(--kimi-color-surface);font-size:12.5px;font-weight:500;cursor:grab;user-select:none;transition:border-color var(--t-fast),box-shadow var(--t-fast)}
-    #cellgame .chip:hover{border-color:var(--kimi-color-text-primary)}
-    #cellgame .chip.sel{border-color:var(--kimi-color-text-primary);box-shadow:0 0 0 2px var(--kimi-color-surface),0 0 0 3px var(--kimi-color-text-primary)}
-    #cellgame .chip.ghost{opacity:.35}
-    #cellgame .blk{border:1px solid var(--kimi-color-border);border-radius:10px;padding:8px;background:var(--kimi-color-surface);transition:border-color var(--t-fast)}
-    #cellgame .blk.over{border-color:var(--kimi-color-text-primary)}
-    #cellgame .blk.done{border-color:var(--kimi-color-positive);background:color-mix(in srgb, var(--kimi-color-positive) 8%, transparent)}
-    #cellgame .slot{display:flex;align-items:center;gap:6px;min-height:26px;border:1px dashed var(--kimi-color-border);border-radius:6px;padding:3px 8px;font-size:12px;color:var(--kimi-color-text-quaternary);margin-bottom:6px;transition:border-color var(--t-fast),color var(--t-fast)}
-    #cellgame .blk.over .slot{border-color:var(--kimi-color-text-primary);color:var(--kimi-color-text-primary)}
-    #cellgame .blk.done .slot{border-style:solid;border-color:var(--kimi-color-positive);color:var(--kimi-color-text-primary);font-weight:500;background:color-mix(in srgb, var(--kimi-color-positive) 14%, transparent)}
-    #cellgame .txt{font-size:12px;line-height:1.45;color:var(--kimi-color-text-secondary)}
-    #cellgame .imgw{display:flex;justify-content:center;padding:4px 0 2px}
-    #cellgame .orgimg{height:86px;max-width:100%;border-radius:6px;object-fit:cover;border:1px solid var(--kimi-color-border)}
-    @keyframes cgshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-    #cellgame .shake{animation:cgshake .18s var(--ease-standard) 2;border-color:var(--kimi-color-danger)!important}
-    #cellgame .win{display:none;margin-top:12px;padding:10px 12px;border-radius:10px;font-size:14px;font-weight:500;border:1px solid var(--kimi-color-positive);background:color-mix(in srgb, var(--kimi-color-positive) 10%, transparent)}
+    #cellgame{--ink:#1e1b4b}
+    #cellgame *{box-sizing:border-box}
+    #cellgame .hdr{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;margin-bottom:12px;padding:14px 16px;border-radius:20px;color:#fff;background:linear-gradient(120deg,#7c3aed,#db2777 55%,#f97316);box-shadow:0 8px 20px rgba(124,58,237,.35)}
+    #cellgame .hdr>div:first-child{flex:1 1 220px;min-width:0}
+    #cellgame h3{margin:0;font-size:22px;font-weight:800;line-height:1.2}
+    #cellgame .sub{font-size:15px;color:rgba(255,255,255,.95);margin:4px 0 0;line-height:1.35}
+    #cellgame .score{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;background:rgba(255,255,255,.22);padding:8px 12px;border-radius:999px;white-space:nowrap}
+    #cellgame .pbar{flex:1 1 100%;order:5;height:12px;border-radius:8px;background:rgba(255,255,255,.3);overflow:hidden}
+    #cellgame .pfill{height:100%;width:0%;background:linear-gradient(90deg,#fde047,#4ade80,#22d3ee);border-radius:8px;transition:width .3s cubic-bezier(.22,1,.36,1)}
+    #cellgame .btn{min-height:44px;border:0;background:#fff;color:#7c3aed;border-radius:14px;padding:10px 18px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18);touch-action:manipulation}
+    #cellgame .btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+    #cellgame .board{display:grid;grid-template-columns:220px minmax(0,1fr);gap:14px;align-items:start}
+    #cellgame .parts{display:flex;flex-direction:column;gap:8px;position:sticky;top:10px;max-height:calc(100vh - 20px);overflow-y:auto;padding:10px;border-radius:20px;background:rgba(255,255,255,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 6px 18px rgba(30,27,75,.15)}
+    #cellgame .sec-h{font-size:15px;font-weight:800;color:var(--ink);padding:2px 4px 6px}
+    #cellgame .col{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+    #cellgame .col .sec-h{grid-column:1/-1;font-size:17px;background:rgba(255,255,255,.75);border-radius:14px;padding:8px 12px}
+    #cellgame .chip{--c:#7c3aed;padding:12px 14px;min-height:48px;display:flex;align-items:center;border:3px solid transparent;border-radius:14px;background:var(--c);color:#fff;font-size:16px;font-weight:700;line-height:1.2;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:manipulation;box-shadow:0 4px 0 rgba(0,0,0,.22);transition:transform .12s,box-shadow .12s}
+    #cellgame .chip:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.22)}
+    #cellgame .chip.sel{border-color:#fff;outline:4px solid var(--ink);transform:scale(1.04);box-shadow:0 6px 14px rgba(0,0,0,.35)}
+    #cellgame .chip.ghost{opacity:.4}
+    #cellgame .blk{--c:#22c55e;border:3px solid #fff;border-radius:20px;padding:10px;background:#fff;box-shadow:0 6px 16px rgba(30,27,75,.18);touch-action:manipulation;transition:border-color .12s,transform .12s,background .2s}
+    #cellgame .blk.over{border-color:#f97316;transform:scale(1.02)}
+    #cellgame .board:has(.chip.sel) .blk:not(.done){border-color:#f59e0b;cursor:pointer;animation:cgpulse 1s ease-in-out infinite}
+    @keyframes cgpulse{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.55)}50%{box-shadow:0 0 0 8px rgba(245,158,11,0)}}
+    #cellgame .blk.done{border-color:var(--c);background:color-mix(in srgb,var(--c) 14%,#fff);animation:none}
+    #cellgame .slot{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;border:3px dashed #a5b4fc;border-radius:14px;padding:6px 10px;font-size:16px;font-weight:700;color:#6366f1;background:#eef2ff;margin-bottom:10px;text-align:center}
+    #cellgame .board:has(.chip.sel) .blk:not(.done) .slot{border-color:#f59e0b;background:#fffbeb;color:#b45309}
+    #cellgame .blk.done .slot{border-style:solid;border-color:var(--c);background:var(--c);color:#fff}
+    #cellgame .blk.done .slot svg{stroke:#fff}
+    #cellgame .txt{font-size:16px;line-height:1.5;color:#312e81;padding:2px 4px 4px}
+    #cellgame .imgw{display:flex;justify-content:center}
+    #cellgame .orgimg{width:100%;height:auto;max-height:280px;border-radius:14px;object-fit:contain;background:#f8fafc;border:2px solid #e0e7ff}
+    @keyframes cgshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+    #cellgame .shake{animation:cgshake .18s ease 2;border-color:#ef4444!important}
+    #cellgame .chip.shake{background:#ef4444}
+    #cellgame .win{display:none;margin-top:14px;padding:16px;border-radius:18px;font-size:18px;font-weight:800;text-align:center;color:#fff;background:linear-gradient(120deg,#16a34a,#06b6d4);box-shadow:0 8px 20px rgba(22,163,74,.35)}
     #cellgame .win.show{display:block}
-    @media(max-width:680px){#cellgame .board{grid-template-columns:110px minmax(0,1fr)}#cellgame .txt{font-size:11px}#cellgame .orgimg{height:64px}}
+    @media(max-width:760px){
+      body{padding:8px!important}
+      #cellgame .hdr{padding:12px;border-radius:16px}
+      #cellgame h3{font-size:20px}
+      #cellgame .board{grid-template-columns:minmax(0,1fr);gap:12px}
+      #cellgame .parts{top:6px;max-height:38vh;flex-direction:row;flex-wrap:wrap;gap:8px;padding:8px;z-index:5}
+      #cellgame .parts .sec-h{flex:1 1 100%;padding:0 4px 2px;font-size:14px}
+      #cellgame .chip{flex:1 1 calc(50% - 8px);justify-content:center;text-align:center;min-height:52px;font-size:16px}
+      #cellgame .col{grid-template-columns:minmax(0,1fr);gap:14px}
+      #cellgame .orgimg{max-height:min(320px,60vw*1.1)}
+      #cellgame .txt{font-size:17px}
+      #cellgame .slot{min-height:54px;font-size:17px}
+    }
   </style>
 
   <div class="hdr">
@@ -122,7 +142,9 @@ var ORG=[
  {id:'nutrients',name:'Поживні речовини',fn:'Запасаються у клітині як джерело енергії та будівельний матеріал (крохмаль, жири, білки).',st:'Включення в цитоплазмі: зерна (крохмаль), краплі (жири), кристали (солі), глікоген.'},
  {id:'chromosome',name:'Хромосоми',fn:'Несуть спадкову інформацію — гени; забезпечують її передачу під час поділу клітини.',st:'Довгі нитки хроматину з ділянками ДНК та білків гістонів; у складі ядра.'}
 ];
-var CHECK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--kimi-color-positive)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 10 18 20 6.5"/></svg>';
+var PAL=['#e11d48','#ea580c','#d97706','#65a30d','#16a34a','#059669','#0d9488','#0891b2','#0284c7','#2563eb','#4f46e5','#7c3aed','#9333ea','#c026d3','#db2777','#dc2626','#0f766e','#c2410c'];
+var COLOR={};ORG.forEach(function(o,i){COLOR[o.id]=PAL[i%PAL.length]});
+var CHECK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 10 18 20 6.5"/></svg>';
 var board=document.getElementById('cgBoard'),scoreEl=document.getElementById('cgScore'),
     fill=document.getElementById('cgFill'),winEl=document.getElementById('cgWin'),
     instruction=document.getElementById('cgInstruction'),
@@ -144,9 +166,9 @@ function build(){
  instruction.textContent=ROUNDS[round].instruction;
  updateScore();board.innerHTML='';
  var parts=document.createElement('div');parts.className='parts';
- parts.innerHTML='<div class="sec-h">Назви</div>';
+ parts.innerHTML='<div class="sec-h">👆 Обери назву, потім торкнись картки</div>';
  shuffle(ORG.slice()).forEach(function(o){
-   var c=document.createElement('div');c.className='chip';c.textContent=o.name;c.dataset.org=o.id;c.draggable=true;
+   var c=document.createElement('div');c.className='chip';c.textContent=o.name;c.dataset.org=o.id;c.draggable=true;c.style.setProperty('--c',COLOR[o.id]);
    c.addEventListener('dragstart',function(e){e.dataTransfer.setData('text/plain',o.id);c.classList.add('ghost')});
    c.addEventListener('dragend',function(){c.classList.remove('ghost')});
    c.addEventListener('click',function(){
@@ -160,10 +182,10 @@ function build(){
  var col=document.createElement('div');col.className='col';
  col.innerHTML='<div class="sec-h">'+ROUNDS[round].title+'</div>';
  shuffle(ORG.slice()).forEach(function(o){
-   var b=document.createElement('div');b.className='blk';b.dataset.org=o.id;
+   var b=document.createElement('div');b.className='blk';b.dataset.org=o.id;b.style.setProperty('--c',COLOR[o.id]);
    var content=round===0?'<div class="imgw">'+icon(o.id)+'</div>':
                round===1?'<div class="txt">'+o.fn+'</div>':'<div class="txt">'+o.st+'</div>';
-   b.innerHTML='<div class="slot">+ назва</div>'+content;
+   b.innerHTML='<div class="slot">❓ торкнись, щоб вставити назву</div>'+content;
    b.addEventListener('dragover',function(e){e.preventDefault();if(!b.classList.contains('done'))b.classList.add('over')});
    b.addEventListener('dragleave',function(){b.classList.remove('over')});
    b.addEventListener('drop',function(e){e.preventDefault();b.classList.remove('over');attempt(e.dataTransfer.getData('text/plain'),b)});
@@ -183,14 +205,14 @@ function attempt(orgId,blk){
    matched++;updateScore();
    if(matched===ORG.length){
      if(round<2){
-       winEl.textContent='Раунд '+(round+1)+' завершено! Наступний раунд почнеться автоматично…';
+       winEl.textContent='🎉 Раунд '+(round+1)+' завершено! Наступний раунд починається…';
        winEl.className='win show';
        transitionTimer=setTimeout(function(){round++;build()},1400);
      }else{
        scoreEl.textContent='Завершено · 3/3';
        fill.style.width='100%';
        instruction.textContent='Усі три раунди пройдено!';
-       winEl.textContent='Вітаємо! Ти успішно завершив(ла) всі 3 раунди: зображення, функції та будова клітинних структур.';
+       winEl.textContent='🏆 Вітаємо! Ти успішно завершив(ла) всі 3 раунди: зображення, функції та будова клітинних структур.';
        winEl.className='win show';
      }
    }
